@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React from 'react'
+import { cx, css } from 'emotion'
+import RichText from './RichText'
+
 import './App.css';
 
-function App() {
+const Wrapper = ({ className, ...props }) => (
+  <div
+    {...props}
+    className={cx(
+      className,
+      css`
+        margin: 20px auto;
+        padding: 20px;
+        width: calc(21cm - 20px);
+        height: calc(29.7cm - 20px); 
+      `
+    )}
+  />
+)
+
+const ExampleContent = props => (
+  <Wrapper
+    {...props}
+    className={css`
+      background: #fff;
+    `}
+  />
+)
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ExampleContent>
+      <RichText />
+    </ExampleContent>
+  )
 }
 
 export default App;
