@@ -1,8 +1,6 @@
 html,
 input,
 textarea {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.4;
   background: #eee;
 }
 
@@ -10,8 +8,8 @@ body {
   margin: 0;
 }
 
-p {
-  margin: 0;
+* > p {
+  margin: 0 !important;
 }
 
 pre {
@@ -68,8 +66,4 @@ input {
 input:focus {
   outline: 0;
   border-color: blue;
-}
-
-[data-slate-editor] > * + * {
-  margin-top: 1em;
 }

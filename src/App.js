@@ -3,6 +3,7 @@ import { cx, css } from 'emotion'
 import RichText from './RichText'
 
 import './App.css';
+import Sidebar from './components/Sidebar';
 
 const Wrapper = ({ className, ...props }) => (
   <div
@@ -11,15 +12,15 @@ const Wrapper = ({ className, ...props }) => (
       className,
       css`
         margin: 20px auto;
-        padding: 20px;
-        width: calc(21cm - 20px);
-        height: calc(29.7cm - 20px); 
+        width: 21cm;
+        height: 29.7cm;
+        grid-column: 2;
       `
     )}
   />
 )
 
-const ExampleContent = props => (
+const EditorContent = props => (
   <Wrapper
     {...props}
     className={css`
@@ -28,11 +29,24 @@ const ExampleContent = props => (
   />
 )
 
+const Main = props => (
+  <div
+    {...props}
+    className={css`
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+    `}
+  />
+)
+
 const App = () => {
   return (
-    <ExampleContent>
-      <RichText />
-    </ExampleContent>
+    <Main>
+      <Sidebar />
+      <EditorContent>
+        <RichText />
+      </EditorContent>
+    </Main>
   )
 }
 
