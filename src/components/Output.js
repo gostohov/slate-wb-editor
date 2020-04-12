@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { store } from '../store';
 import { cx, css } from 'emotion';
 import Input from './Input';
+import { tap } from 'rxjs/operators';
 
 const Output = (props) => {
   const [state, setState] = useState({ value: '[Введите ваш текст]' });
@@ -9,11 +10,18 @@ const Output = (props) => {
   const inputHandler = (e) => setState({ value: e.target.value });
 
   useEffect(() => {
-    const key = `input_${store.sidebar.getInputList().length}`;
-    const input = <Input inputHandler={inputHandler} key={key} keyProp={key} />;
-    store.sidebar.addInput(input);
+    const { subject, key } = props.element.options;
+    const isExist = store.sidebar.getInputList().some(item => item.props.keyProp === key);
+    let sub;
+    if (!isExist) {
+      const input = <Input key={key} keyProp={key} inputSubject={subject}/>;
+      store.sidebar.addInput(input);
+      sub = subject.pipe(tap(e => inputHandler(e))).subscribe();
+    }
     return () => {
-      store.sidebar.removeInput(key);
+      if (sub) {
+        sub.unsubscribe();
+      }
     }
   }, []);
 

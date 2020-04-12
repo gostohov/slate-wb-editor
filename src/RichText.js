@@ -7,12 +7,24 @@ import { css } from 'emotion'
 
 import { Button, Icon, Toolbar } from './components'
 import Output from './components/Output'
+import { createForm } from './createForm'
 
 const HOTKEYS = {
   'mod+b': 'bold',
   'mod+i': 'italic',
   'mod+u': 'underline',
   'mod+`': 'code',
+}
+
+const SoftBreak = (options = {}) => {
+  return {
+    onKeyDown(event, change, next) {
+      console.log(event);
+      if (event.key !== 'Enter') return next()
+      if (options.shift && event.shiftKey === false) return next()
+      return change.insertText('\n')
+    },
+  }
 }
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
@@ -57,6 +69,10 @@ const RichText = () => {
                 toggleMark(editor, mark)
               }
             }
+            if (event.key === "Enter") {
+              event.preventDefault();
+              Editor.insertText(editor, '\n')
+            }
           }}
         />
       </EditableWrapper>
@@ -66,7 +82,6 @@ const RichText = () => {
 
 const withOutputs = editor => {
   const { isInline, isVoid } = editor
-
   editor.isInline = element => {
     return element.type === 'output' ? true : isInline(element)
   }
@@ -96,7 +111,7 @@ const ToolbarWrapper = props => (
   />
 )
 
-const toggleBlock = (editor, format) => {
+const toggleBlock = (editor, format, options) => {
   const isActive = isBlockActive(editor, format)
   const isList = LIST_TYPES.includes(format)
 
@@ -107,7 +122,7 @@ const toggleBlock = (editor, format) => {
 
   let block = { type: isActive ? 'paragraph' : isList ? 'list-item' : format };
   if (block.type === 'output') {
-    block = {...block, children: [{ text: '' }]};
+    block = {...block, children: [{ text: '' }], options};
     Transforms.insertNodes(editor, block)
     Transforms.move(editor)
   } else {
@@ -123,7 +138,6 @@ const toggleBlock = (editor, format) => {
 }
 
 const toggleMark = (editor, format) => {
-  console.log(format);
   const isActive = isMarkActive(editor, format)
 
   if (isActive) {
@@ -146,7 +160,8 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false
 }
 
-const Element = ({ attributes, children, element }) => {
+const Element = (props) => {
+  const { attributes, children, element } = props;
   switch (element.type) {
     case 'block-quote':
       return <blockquote {...attributes}>{children}</blockquote>
@@ -161,7 +176,7 @@ const Element = ({ attributes, children, element }) => {
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>
     case 'output':
-      return <Output>{children}</Output>
+      return <Output {...props}/>
     default:
       return <p {...attributes}>{children}</p>
   }
@@ -224,7 +239,7 @@ const FormButton = ({ format, icon }) => {
       active={isMarkActive(editor, format)}
       onMouseDown={event => {
         event.preventDefault()
-        toggleBlock(editor, format)
+        createForm(options => toggleBlock(editor, format, options))
       }}
     >
       <Icon>{icon}</Icon>
