@@ -7,7 +7,13 @@ import { tap } from 'rxjs/operators';
 const Output = (props) => {
   const [state, setState] = useState({ value: '[Введите ваш текст]' });
 
-  const inputHandler = (e) => setState({ value: e.target.value });
+  const inputHandler = (e) => {
+    let value = e.target.value;
+    if (!value.length) {
+      value = '[Введите ваш текст]';
+    }
+    setState({ value: value });
+  }
 
   useEffect(() => {
     const { subject, key } = props.element.options;
@@ -40,8 +46,11 @@ const Wrapper = ({ className, ...props }) => (
     className={cx(
       className,
       css`
-        background-color: rgb(201, 201, 201);
+        background-color: #eee;
         padding: 2px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        box-shadow: 0 0 0 2px #B4D5FF;
       `
     )}
   />
