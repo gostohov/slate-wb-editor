@@ -11,9 +11,6 @@ const Wrapper = ({ className, ...props }) => (
     className={cx(
       className,
       css`
-        margin: 20px auto;
-        width: 21cm;
-        min-height: 29.7cm;
         grid-column: 2;
       `
     )}
@@ -24,7 +21,6 @@ const EditorContent = props => (
   <Wrapper
     {...props}
     className={css`
-      background: #fff;
     `}
   />
 )

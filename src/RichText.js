@@ -43,28 +43,30 @@ const RichText = () => {
           <FormButton format="output" icon="note_add" />
         </Toolbar>
       </ToolbarWrapper>
-      <EditableWrapper>
-        <Editable
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          placeholder="Введите ваш текст…"
-          spellCheck
-          autoFocus
-          onKeyDown={event => {
-            for (const hotkey in HOTKEYS) {
-              if (isHotkey(hotkey, event)) {
-                event.preventDefault()
-                const mark = HOTKEYS[hotkey]
-                toggleMark(editor, mark)
+      <Page>
+        <EditableWrapper>
+          <Editable
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+            placeholder="Введите ваш текст…"
+            spellCheck
+            autoFocus
+            onKeyDown={event => {
+              for (const hotkey in HOTKEYS) {
+                if (isHotkey(hotkey, event)) {
+                  event.preventDefault()
+                  const mark = HOTKEYS[hotkey]
+                  toggleMark(editor, mark)
+                }
               }
-            }
-            if (event.key === "Enter") {
-              event.preventDefault();
-              Editor.insertText(editor, '\n')
-            }
-          }}
-        />
-      </EditableWrapper>
+              if (event.key === "Enter") {
+                event.preventDefault();
+                Editor.insertText(editor, '\n')
+              }
+            }}
+          />
+        </EditableWrapper>
+      </Page>
     </Slate>
   )
 }
@@ -82,6 +84,22 @@ const withOutputs = editor => {
   return editor
 }
 
+const Page = props => {
+  const style = {
+    margin: '20px auto',
+    width: '21cm',
+    height: '29.7cm',
+    background: '#fff'
+  };
+
+  return (
+    <div style={style}>
+      {props.children}
+    </div>
+  );
+}
+
+
 const EditableWrapper = props => (
   <div
     {...props}
@@ -95,11 +113,12 @@ const ToolbarWrapper = props => (
   <div
     {...props}
     className={css`
-      padding: 20px 20px 0 20px;
       position: sticky;
       top: 0px;
       background: #fff;
       z-index: 1000;
+      margin: 20px auto;
+      width: 21cm;
     `}
   />
 )
