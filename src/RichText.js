@@ -96,6 +96,10 @@ const ToolbarWrapper = props => (
     {...props}
     className={css`
       padding: 20px 20px 0 20px;
+      position: sticky;
+      top: 0px;
+      background: #fff;
+      z-index: 1000;
     `}
   />
 )

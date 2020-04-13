@@ -13,7 +13,7 @@ const Wrapper = ({ className, ...props }) => (
       css`
         margin: 20px auto;
         width: 21cm;
-        height: 29.7cm;
+        min-height: 29.7cm;
         grid-column: 2;
       `
     )}
