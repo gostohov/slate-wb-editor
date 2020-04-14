@@ -5,36 +5,36 @@ import Input from './Input';
 import { tap } from 'rxjs/operators';
 
 const Output = (props) => {
-  const [state, setState] = useState({ value: '[Введите ваш текст]' });
+  const [state, setState] = useState({ 
+    value: '',
+    isAlive: true
+  });
 
-  const inputHandler = (e) => {
-    let value = e.target.value;
-    if (!value.length) {
-      value = '[Введите ваш текст]';
-    }
-    setState({ value: value });
-  }
+  const inputHandler = (value) => setState({ ...state, value });
 
   useEffect(() => {
-    const { subject, key } = props.element.options;
+    const { inputSbj, key, destroySbj } = props.element.options;
     const isExist = store.sidebar.getInputList().some(item => item.props.keyProp === key);
-    let sub;
+    const subList = [];
     if (!isExist) {
-      const input = <Input key={key} keyProp={key} inputSubject={subject}/>;
+      const input = <Input key={key} keyProp={key} inputSubject={inputSbj} destroySbj={destroySbj}/>;
       store.sidebar.addInput(input);
-      sub = subject.pipe(tap(e => inputHandler(e))).subscribe();
+      subList.push(inputSbj.pipe(tap(e => inputHandler(e))).subscribe());
+      subList.push(destroySbj.pipe(tap(val => setState({ ...state, isAlive: val }))).subscribe());
     }
     return () => {
-      if (sub) {
-        sub.unsubscribe();
+      if (subList.length) {
+        subList.forEach(sub => sub.unsubscribe());
       }
     }
   }, []);
 
   return (
-    <Wrapper>
-      <span contentEditable={false} style={{ userSelect: "none" }}>{state.value}{props.children}</span>
-    </Wrapper>
+    state.isAlive ?
+                  <Wrapper>
+                    <span contentEditable={false} style={{ userSelect: "none" }}>{state.value}{props.children}</span>
+                  </Wrapper>
+                  : null
   )
 };
 

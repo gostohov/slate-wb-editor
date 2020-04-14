@@ -11,6 +11,9 @@ export const Button = React.forwardRef(
         className,
         css`
           cursor: pointer;
+          &:hover {
+            color: black;
+          }
           color: ${reversed
             ? active
               ? 'white'

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useRef } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import isHotkey from 'is-hotkey'
 import { Editable, withReact, useSlate, Slate } from 'slate-react'
 import { Editor, Transforms, createEditor } from 'slate'
@@ -207,6 +207,7 @@ const Leaf = ({ attributes, children, leaf }) => {
 
 const BlockButton = ({ format, icon }) => {
   const editor = useSlate()
+  
   return (
     <Button
       active={isBlockActive(editor, format)}
@@ -237,9 +238,10 @@ const MarkButton = ({ format, icon }) => {
 
 const FormButton = ({ format, icon }) => {
   const editor = useSlate();
+  
   return (
     <Button
-      active={isMarkActive(editor, format)}
+      active={isBlockActive(editor, format)}
       onMouseDown={event => {
         event.preventDefault()
         createForm(options => toggleBlock(editor, format, options))

@@ -20,7 +20,6 @@ const Sidebar = (props) => {
 
   return (
     <Wrapper>
-      Сайдбар
       {state.inputList}
     </Wrapper>
   )
@@ -41,6 +40,7 @@ const Wrapper = ({ className, ...props }) => (
         grid-column: 1;
         padding: 20px;
         background: #fff;
+        overflow-y: scroll;
       `
     )}
   />
