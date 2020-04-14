@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useRef } from 'react'
 import isHotkey from 'is-hotkey'
 import { Editable, withReact, useSlate, Slate } from 'slate-react'
 import { Editor, Transforms, createEditor } from 'slate'
@@ -174,24 +174,15 @@ const isMarkActive = (editor, format) => {
 
 const Element = (props) => {
   const { attributes, children, element } = props;
-  switch (element.type) {
-    case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>
-    case 'bulleted-list':
-      return <ul {...attributes}>{children}</ul>
-    case 'heading-one':
-      return <h1 {...attributes}>{children}</h1>
-    case 'heading-two':
-      return <h2 {...attributes}>{children}</h2>
-    case 'list-item':
-      return <li {...attributes}>{children}</li>
-    case 'numbered-list':
-      return <ol {...attributes}>{children}</ol>
-    case 'output':
-      return <Output {...props}/>
-    default:
-      return <p {...attributes}>{children}</p>
-  }
+  const type = element.type;
+  if (type === 'block-quote') { return <blockquote {...attributes}>{children}</blockquote> }
+  else if (type === 'bulleted-list') { return <ul {...attributes}>{children}</ul> }
+  else if (type === 'heading-one') { return <h1 {...attributes}>{children}</h1> }
+  else if (type === 'heading-two') { return <h2 {...attributes}>{children}</h2> }
+  else if (type === 'list-item') { return <li {...attributes}>{children}</li> }
+  else if (type === 'numbered-list') { return <ol {...attributes}>{children}</ol> }
+  else if (type === 'output') { return <Output {...props}/> }
+  else  { return  <p {...attributes}>{children}</p> }
 }
 
 const Leaf = ({ attributes, children, leaf }) => {
