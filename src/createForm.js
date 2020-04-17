@@ -2,10 +2,10 @@ import React from 'react'
 import { store } from './store';
 import Input from './components/Input';
 
-export const createForm = (type, callback) => {
+export const createForm = (type, text, callback) => {
   switch (type) {
     case 'output'           : createInput(callback); break;
-    case 'output-checkbox'  : createCheckboxInput(callback); break;
+    case 'output-checkbox'  : createCheckboxInput(callback, text); break;
     default                 : break;
   }
 }
@@ -18,6 +18,6 @@ const createInput = (callback) => {
   callback({inputNumber});
 }
 
-const createCheckboxInput = (callback) => {
-  callback()
+const createCheckboxInput = (callback, text) => {
+  callback({text})
 };

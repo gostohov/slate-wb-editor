@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import isHotkey from 'is-hotkey'
-import { Editable, withReact, useSlate, Slate } from 'slate-react'
-import { Editor, Transforms, createEditor } from 'slate'
+import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react'
+import { Editor, Transforms, createEditor, Range } from 'slate'
 import { withHistory } from 'slate-history'
 import { css } from 'emotion'
 
@@ -247,6 +247,7 @@ const MarkButton = ({ format, icon }) => {
 const FormButton = ({ format, icon }) => {
   const editor = useSlate();
   
+  
   return (
     <Button
       active={isBlockActive(editor, format)}
@@ -262,13 +263,24 @@ const FormButton = ({ format, icon }) => {
 
 const CheckboxButton = ({ format, icon }) => {
   const editor = useSlate();
-  
+
+  const { selection } = editor
+  let text = '';
+  if (
+    selection &&
+    ReactEditor.isFocused(editor) &&
+    !Range.isCollapsed(selection) &&
+    Editor.string(editor, selection) !== ''
+  ) {
+    text = Editor.string(editor, selection);
+  }
+
   return (
     <Button
       active={isBlockActive(editor, format)}
       onMouseDown={event => {
         event.preventDefault()
-        createForm('output-checkbox', options => toggleBlock(editor, format, options))
+        createForm('output-checkbox', text, options => toggleBlock(editor, format, options))
       }}
     >
       <Icon>{icon}</Icon>
