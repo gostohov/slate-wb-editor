@@ -6,9 +6,8 @@ import { withHistory } from 'slate-history'
 import { css } from 'emotion'
 
 import { Button, Icon, Toolbar } from './components'
-import Output from './components/Output'
 import { createForm } from './createForm'
-import { getOutputElement } from './store';
+import { getOutputElement, getOutputCheckboxElement } from './store';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -43,6 +42,7 @@ const RichText = (props) => {
           <BlockButton format="numbered-list" icon="format_list_numbered" />
           <BlockButton format="bulleted-list" icon="format_list_bulleted" />
           <FormButton format="output" icon="note_add" />
+          <CheckboxButton format="output-checkbox" icon="check_box" />
         </Toolbar>
       </ToolbarWrapper>
       <Page>
@@ -72,11 +72,11 @@ const RichText = (props) => {
 const withOutputs = editor => {
   const { isInline, isVoid } = editor
   editor.isInline = element => {
-    return element.type === 'output' ? true : isInline(element)
+    return element.type === 'output' || element.type === 'output-checkbox' ? true : isInline(element)
   }
 
   editor.isVoid = element => {
-    return element.type === 'output' ? true : isVoid(element)
+    return element.type === 'output' || element.type === 'output-checkbox' ? true : isVoid(element)
   }
 
   return editor
@@ -131,16 +131,22 @@ const toggleBlock = (editor, format, options) => {
   })
 
   let block = { type: isActive ? 'paragraph' : isList ? 'list-item' : format };
-  if (block.type === 'output') {
-    block = {...block, children: [{ text: '' }], options};
-    console.log(block);
-    Transforms.insertNodes(editor, block)
-    Transforms.move(editor)
-  } else {
-    Transforms.setNodes(editor, {
-      type: isActive ? 'paragraph' : isList ? 'list-item' : format,
-    })
+  switch (block.type) {
+    case 'output':
+      block = {...block, children: [{ text: '' }], options};
+      Transforms.insertNodes(editor, block)
+      Transforms.move(editor)
+      break;
+    case 'output-checkbox': 
+      block = {...block, children: [{ text: '' }], options};
+      Transforms.insertNodes(editor, block)
+      Transforms.move(editor)
+      break;
+    default:
+      Transforms.setNodes(editor, { block })
+      break;
   }
+
 
   if (!isActive && isList) {
     const block = { type: format, children: [] }
@@ -175,14 +181,15 @@ const Element = (props) => {
   const { attributes, children, element } = props;
 
   switch (element.type) {
-    case 'block-quote'    : return <blockquote {...attributes}>{children}</blockquote>
-    case 'bulleted-list'  : return <ul {...attributes}>{children}</ul>
-    case 'heading-one'    : return <h1 {...attributes}>{children}</h1>
-    case 'heading-two'    : return <h2 {...attributes}>{children}</h2>
-    case 'list-item'      : return <li {...attributes}>{children}</li>
-    case 'numbered-list'  : return <ol {...attributes}>{children}</ol>
-    case 'output'         : return getOutputElement(props)
-    default               : return <p {...attributes}>{children}</p>
+    case 'block-quote'        : return <blockquote {...attributes}>{children}</blockquote>
+    case 'bulleted-list'      : return <ul {...attributes}>{children}</ul>
+    case 'heading-one'        : return <h1 {...attributes}>{children}</h1>
+    case 'heading-two'        : return <h2 {...attributes}>{children}</h2>
+    case 'list-item'          : return <li {...attributes}>{children}</li>
+    case 'numbered-list'      : return <ol {...attributes}>{children}</ol>
+    case 'output'             : return getOutputElement(props)
+    case 'output-checkbox'    : return getOutputCheckboxElement(props)
+    default                   : return <p {...attributes}>{children}</p>
   }
 }
 
@@ -245,7 +252,23 @@ const FormButton = ({ format, icon }) => {
       active={isBlockActive(editor, format)}
       onMouseDown={event => {
         event.preventDefault()
-        createForm(options => toggleBlock(editor, format, options))
+        createForm('output', options => toggleBlock(editor, format, options))
+      }}
+    >
+      <Icon>{icon}</Icon>
+    </Button>
+  );
+}
+
+const CheckboxButton = ({ format, icon }) => {
+  const editor = useSlate();
+  
+  return (
+    <Button
+      active={isBlockActive(editor, format)}
+      onMouseDown={event => {
+        event.preventDefault()
+        createForm('output-checkbox', options => toggleBlock(editor, format, options))
       }}
     >
       <Icon>{icon}</Icon>

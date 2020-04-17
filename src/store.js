@@ -1,5 +1,6 @@
 import React from 'react'
 import Output from "./components/Output";
+import OutputCheckbox from './components/OutputCheckbox';
 
 export let store;
 export let outputList = [];
@@ -34,4 +35,8 @@ export const getOutputElement = (props) => {
     }
     return targetOutput;
   }
+}
+
+export const getOutputCheckboxElement = (props) => {
+  return <OutputCheckbox {...props} />
 }
