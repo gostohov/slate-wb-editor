@@ -8,6 +8,7 @@ import { css } from 'emotion'
 import { Button, Icon, Toolbar } from './components'
 import Output from './components/Output'
 import { createForm } from './createForm'
+import { getOutputElement } from './store';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -170,37 +171,8 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false
 }
 
-let outputList = [];
 const Element = (props) => {
-  const { attributes, children, element, inputState } = props;
-
-  const addToList = () => {
-    const output = <Output {...props} value={inputState.value} inputNumber={element.options.inputNumber}/>;
-    outputList.push(output);
-    return output;
-  }
-
-  const deleteFromList = () => {
-    const targetOutputIndex = outputList.findIndex(item => item.props.inputNumber === inputState.inputNumber);
-    if (targetOutputIndex !== -1) {
-      outputList.splice(targetOutputIndex, 1);
-    }
-  }
-
-  const getOutputElement = () => {
-    if (inputState.inputNumber == null) {
-      return addToList();      
-    } else if (inputState.inputNumber === element.options.inputNumber) {
-      deleteFromList();
-      return addToList();      
-    } else {
-      const targetOutput = outputList.find(item => item.props.inputNumber === element.options.inputNumber);
-      if (!targetOutput) {
-        return addToList();   
-      }
-      return targetOutput;
-    }
-  }
+  const { attributes, children, element } = props;
 
   switch (element.type) {
     case 'block-quote'    : return <blockquote {...attributes}>{children}</blockquote>
@@ -209,7 +181,7 @@ const Element = (props) => {
     case 'heading-two'    : return <h2 {...attributes}>{children}</h2>
     case 'list-item'      : return <li {...attributes}>{children}</li>
     case 'numbered-list'  : return <ol {...attributes}>{children}</ol>
-    case 'output'         : return getOutputElement()
+    case 'output'         : return getOutputElement(props)
     default               : return <p {...attributes}>{children}</p>
   }
 }
