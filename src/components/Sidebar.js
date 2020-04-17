@@ -20,6 +20,7 @@ const Sidebar = (props) => {
 
   return (
     <Wrapper>
+      Сайдбар
       {state.inputList}
     </Wrapper>
   )

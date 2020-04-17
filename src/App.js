@@ -1,26 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { cx, css } from 'emotion'
 import RichText from './RichText'
+import Sidebar from './components/Sidebar';
+import { addContext } from './store';
 
 import './App.css';
-import Sidebar from './components/Sidebar';
-
-const Wrapper = ({ className, ...props }) => (
-  <div
-    {...props}
-    className={cx(
-      className,
-      css`
-        grid-column: 2;
-      `
-    )}
-  />
-)
 
 const EditorContent = props => (
-  <Wrapper
+  <div
     {...props}
     className={css`
+      grid-column: 2;
     `}
   />
 )
@@ -36,11 +26,19 @@ const Main = props => (
 )
 
 const App = () => {
+
+  const [inputState, setInputState] = useState({
+    value: '',
+    inputNumber: null
+  });
+
+  addContext({ app: {inputState, setInputState}});
+
   return (
     <Main>
-      <Sidebar />
+      <Sidebar setInputState={setInputState}/>
       <EditorContent>
-        <RichText />
+        <RichText inputState={inputState} />
       </EditorContent>
     </Main>
   )

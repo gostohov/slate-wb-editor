@@ -18,9 +18,10 @@ const HOTKEYS = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-const RichText = () => {
+const RichText = (props) => {
+  const inputState = props.inputState;
   const [value, setValue] = useState(initialValue)
-  const renderElement = useCallback(props => <Element {...props} />, [])
+  const renderElement = useCallback(props => <Element {...props} inputState={inputState}/>, [inputState])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
   const editor = useMemo(
     () => withOutputs(withReact(withHistory(createEditor()))), 
@@ -58,10 +59,6 @@ const RichText = () => {
                   const mark = HOTKEYS[hotkey]
                   toggleMark(editor, mark)
                 }
-              }
-              if (event.key === "Enter") {
-                event.preventDefault();
-                Editor.insertText(editor, '\n')
               }
             }}
           />
@@ -135,6 +132,7 @@ const toggleBlock = (editor, format, options) => {
   let block = { type: isActive ? 'paragraph' : isList ? 'list-item' : format };
   if (block.type === 'output') {
     block = {...block, children: [{ text: '' }], options};
+    console.log(block);
     Transforms.insertNodes(editor, block)
     Transforms.move(editor)
   } else {
@@ -172,17 +170,48 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false
 }
 
+let outputList = [];
 const Element = (props) => {
-  const { attributes, children, element } = props;
-  const type = element.type;
-  if (type === 'block-quote') { return <blockquote {...attributes}>{children}</blockquote> }
-  else if (type === 'bulleted-list') { return <ul {...attributes}>{children}</ul> }
-  else if (type === 'heading-one') { return <h1 {...attributes}>{children}</h1> }
-  else if (type === 'heading-two') { return <h2 {...attributes}>{children}</h2> }
-  else if (type === 'list-item') { return <li {...attributes}>{children}</li> }
-  else if (type === 'numbered-list') { return <ol {...attributes}>{children}</ol> }
-  else if (type === 'output') { return <Output {...props}/> }
-  else  { return  <p {...attributes}>{children}</p> }
+  const { attributes, children, element, inputState } = props;
+
+  const addToList = () => {
+    const output = <Output {...props} value={inputState.value} inputNumber={element.options.inputNumber}/>;
+    outputList.push(output);
+    return output;
+  }
+
+  const deleteFromList = () => {
+    const targetOutputIndex = outputList.findIndex(item => item.props.inputNumber === inputState.inputNumber);
+    if (targetOutputIndex !== -1) {
+      outputList.splice(targetOutputIndex, 1);
+    }
+  }
+
+  const getOutputElement = () => {
+    if (inputState.inputNumber == null) {
+      return addToList();      
+    } else if (inputState.inputNumber === element.options.inputNumber) {
+      deleteFromList();
+      return addToList();      
+    } else {
+      const targetOutput = outputList.find(item => item.props.inputNumber === element.options.inputNumber);
+      if (!targetOutput) {
+        return addToList();   
+      }
+      return targetOutput;
+    }
+  }
+
+  switch (element.type) {
+    case 'block-quote'    : return <blockquote {...attributes}>{children}</blockquote>
+    case 'bulleted-list'  : return <ul {...attributes}>{children}</ul>
+    case 'heading-one'    : return <h1 {...attributes}>{children}</h1>
+    case 'heading-two'    : return <h2 {...attributes}>{children}</h2>
+    case 'list-item'      : return <li {...attributes}>{children}</li>
+    case 'numbered-list'  : return <ol {...attributes}>{children}</ol>
+    case 'output'         : return getOutputElement()
+    default               : return <p {...attributes}>{children}</p>
+  }
 }
 
 const Leaf = ({ attributes, children, leaf }) => {

@@ -15,22 +15,18 @@ const Input = (props) => {
     initTitle.current = state.title;
   }, []);
 
-
   const inputHandler = (e) => {
     const value = e.target.value;
     if (value.length !== 0) {
-      props.inputSubject.next(value);
+      store.app.setInputState({value, inputNumber: props.inputNumber});
       return;
     }
-    props.inputSubject.next(state.title);
+    store.app.setInputState({value: state.title, inputNumber: props.inputNumber});
   }
 
   const toggleConfigBlock = (e) => setState({ ...state, openConfigBlock: !state.openConfigBlock });
 
-  const destroySelf = (e) => {
-    props.destroySbj.next(false);
-    store.sidebar.removeInput(props.keyProp);
-  }
+  const destroySelf = (e) => store.sidebar.removeInput(props.keyProp);
   
   const setTitle = (e) => {
     const value = e.target.value;
@@ -74,8 +70,8 @@ const Input = (props) => {
         }
         <Button style={style.button}
           onMouseDown={event => {
+            event.preventDefault();
             toggleConfigBlock();
-            event.preventDefault()
           }}
         >
           <Icon style={style.icon}>{'more_vert'}</Icon>
