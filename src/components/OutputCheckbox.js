@@ -4,8 +4,8 @@ import { cx, css } from 'emotion';
 const OutputCheckbox = (props) => {
   return (
     <Wrapper>
-      <span contentEditable={false} 
-            style={{ userSelect: "none" }}
+      <span {...props.attributes}
+            contentEditable={false} 
       >
         Хуйня{props.children}
       </span>

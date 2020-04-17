@@ -4,8 +4,8 @@ import { cx, css } from 'emotion';
 const Output = (props) => {
   return (
     <Wrapper>
-      <span contentEditable={false} 
-            style={{ userSelect: "none" }}
+      <span {...props.attributes}
+            contentEditable={false} 
       >
         {props?.value}{props.children}
       </span>
