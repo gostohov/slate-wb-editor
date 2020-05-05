@@ -1,0 +1,7 @@
+.toolbar-container {
+  border-bottom: 1px solid;
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+}
