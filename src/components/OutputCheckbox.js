@@ -7,7 +7,7 @@ const OutputCheckbox = (props) => {
       <span {...props.attributes}
             contentEditable={false} 
       >
-        Хуйня{props.children}
+        Checkbox element{props.children}
       </span>
     </Wrapper>
   )
